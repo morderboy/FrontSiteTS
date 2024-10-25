@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FaBars, FaHome, FaInfo, FaBook, FaPhone, FaAppStore } from 'react-icons/fa';
 
 export const Header = () => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
 
     return (
         <header className="bg-white-600 shadow-md">
