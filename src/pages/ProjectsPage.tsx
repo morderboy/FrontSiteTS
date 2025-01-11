@@ -1,10 +1,24 @@
+import { useState } from "react";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
-import dyadyaImage from '../assets/dyadya.jpg';
-import pdfwomenImage from '../assets/PDFwomen.jpg'
-import chinaImage from '../assets/china.jpg'
+import { projects } from "../data/projects";
 
 export const ProjectsPage = () => {
+    const [selectedTech, setSelectedTech] = useState<string>("All");
+
+    // Получение уникальных технологий из проектов
+    const allTechnologies = [
+        "All",
+        ...new Set(projects.flatMap((project) => project.technologies)),
+    ];
+
+    // Фильтрация проектов по выбранной технологии
+    const filteredProjects = projects.filter((project) =>
+        selectedTech === "All"
+            ? true
+            : project.technologies.includes(selectedTech)
+    );
+
     return (
         <main className="flex flex-col min-h-screen">
             <Header />
@@ -15,46 +29,61 @@ export const ProjectsPage = () => {
                         Здесь представлены некоторые проекты, над которыми я работал.
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Проект 1 */}
-                        <div className="bg-gray-100 p-4 rounded-lg shadow-lg flex flex-col justify-center">
-                            <img
-                                src={dyadyaImage}
-                                alt="Проект 1"
-                                className="rounded-lg mb-4 h-80"
-                            />
-                            <h2 className="text-xl font-semibold mb-2">Проект 1</h2>
-                            <p className="text-gray-600">
-                                Легендарный мем. НЕ НАДА ДЯДЯ НЕ НАДАААААААААААААААААААААААААА!!!!!!!!
-                            </p>
-                        </div>
-
-                        {/* Проект 2 */}
-                        <div className="bg-gray-100 p-4 rounded-lg shadow-lg flex flex-col justify-center">
-                            <img
-                                src={pdfwomenImage}
-                                alt="Проект 2"
-                                className="rounded-lg mb-4 h-80"
-                            />
-                            <h2 className="text-xl font-semibold mb-2">Проект 2</h2>
-                            <p className="text-gray-600">
-                                Та из-за кого я чуть не присел на 8 лет. Не самый удачный проект.
-                            </p>
-                        </div>
-
-                        {/* Проект 3 */}
-                        <div className="bg-gray-100 p-4 rounded-lg shadow-lg flex flex-col justify-center">
-                            <img
-                                src={chinaImage}
-                                alt="Проект 3"
-                                className="rounded-lg mb-4 h-80"
-                            />
-                            <h2 className="text-xl font-semibold mb-2">Проект 3</h2>
-                            <p className="text-gray-600">
-                                Мой китайский двойник. Партия дать мне кошка-жена за этот проект.
-                            </p>
-                        </div>
+                    {/* Селектор технологий */}
+                    <div className="mb-6">
+                        <label htmlFor="tech-filter" className="block text-lg font-semibold mb-2">
+                            Фильтровать по технологии:
+                        </label>
+                        <select
+                            id="tech-filter"
+                            value={selectedTech}
+                            onChange={(e) => setSelectedTech(e.target.value)}
+                            className="border border-gray-300 rounded px-4 py-2 text-gray-700"
+                        >
+                            {allTechnologies.map((tech) => (
+                                <option key={tech} value={tech}>
+                                    {tech}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredProjects.map((project) => (
+                            <div
+                                key={project.id}
+                                className="bg-gray-100 p-4 rounded-lg shadow-lg transform transition duration-300 hover:shadow-2xl hover:scale-105 flex flex-col justify-center"
+                            >
+                                <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
+                                <p className="text-gray-600 mb-4">{project.description}</p>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {project.technologies.map((tech, index) => (
+                                        <span
+                                            key={index}
+                                            className="bg-blue-100 text-blue-700 px-2 py-1 text-sm rounded"
+                                        >
+                                            {tech}
+                                        </span>
+                                    ))}
+                                </div>
+                                <a
+                                    href={project.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:underline"
+                                >
+                                    Подробнее
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Сообщение, если нет проектов */}
+                    {filteredProjects.length === 0 && (
+                        <p className="text-gray-500 text-lg mt-4">
+                            Проекты с выбранной технологией отсутствуют.
+                        </p>
+                    )}
                 </div>
             </div>
             <Footer />
