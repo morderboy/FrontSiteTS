@@ -1,5 +1,5 @@
-// src/components/Footer.tsx
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { socialMediaData } from '../data/socialMedia';
+import { skillsData } from '../data/footerSkills';
 
 export const Footer = () => {
     return (
@@ -19,41 +19,32 @@ export const Footer = () => {
                 <div>
                     <h3 className="text-xl font-bold mb-4">Social Media</h3>
                     <div className="flex justify-center space-x-4">
-                        <a href="https://facebook.com" target="_blank"
-                        rel="noopener noreferrer">
-                        <FaFacebook className="text-black text-2xl 
-                                        hover:text-gray-300" />
-                        </a>
-                        <a href="https://twitter.com" target="_blank"
-                        rel="noopener noreferrer">
-                        <FaTwitter className="text-black text-2xl
-                                        hover:text-gray-300" />
-                        </a>
-                        <a href="https://instagram.com" target="_blank"
-                        rel="noopener noreferrer">
-                        <FaInstagram className="text-black text-2xl
-                                        hover:text-gray-300" />
-                        </a>
-                        <a href="https://linkedin.com" target="_blank"
-                        rel="noopener noreferrer">
-                        <FaLinkedin className="text-black text-2xl
-                                        hover:text-gray-300" />
-                        </a>
+                        {socialMediaData.map((social, index) => (
+                            <a
+                                key={index}
+                                href={social.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={social.name}
+                            >
+                                <social.icon className="text-black text-2xl hover:text-gray-300" />
+                            </a>
+                        ))}
                     </div>
                 </div>
                 <div>
                     <h3 className="text-xl font-bold mb-4">Skills</h3>
                     <ul>
-                        <li><a href="#" className="hover:underline">
-                        Web Development</a></li>
-                        <li><a href="#" className="hover:underline">
-                        App Development</a></li>
-                        <li><a href="#" className="hover:underline">
-                        SEO Optimization</a></li>
+                        {skillsData.map((skill, index) => (
+                            <li key={index}>
+                                <a href={skill.link} className="hover:underline">
+                                    {skill.name}
+                                </a>
+                            </li>
+                        ))}
                     </ul>
                 </div>
-
             </div>
         </footer>
-    )
-}
+    );
+};

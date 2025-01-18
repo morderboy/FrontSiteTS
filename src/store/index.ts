@@ -2,9 +2,21 @@
 import { configureStore } from '@reduxjs/toolkit';
 import projectsReducer from './projectsSlice';
 
+const loadProjectsFromLocalStorage = () => {
+    try {
+        const storedData = localStorage.getItem('projects');
+        if (storedData) {
+            return JSON.parse(storedData);
+        }
+    } catch (error) {
+        console.error("Ошибка при чтении данных из localStorage:", error);
+    }
+    return [];
+};
+
 const preloadedState = {
     projects: {
-        items: JSON.parse(localStorage.getItem('projects') || '[]'),
+        items: loadProjectsFromLocalStorage(),
     },
 };
 

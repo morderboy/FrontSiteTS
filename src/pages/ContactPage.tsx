@@ -2,27 +2,40 @@ import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { useState } from 'react';
 import { Errors } from "../types/Contact/Error";
+import { ContactFormState } from "../types/Contact/ContactFormState";
 
 export const ContactPage = () => {
-    const [name, setName] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [message, setMessage] = useState<string>('');
+    const [formState, setFormState] = useState<ContactFormState>({
+        name: '',
+        email: '',
+        message: '',
+    });
     const [errors, setErrors] = useState<Errors>({});
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-    
+
+    const handleInputChange = (field: keyof ContactFormState, value: string) => {
+        setFormState((prevState) => ({
+            ...prevState,
+            [field]: value,
+        }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const validationErrors = validate();
         setErrors(validationErrors);
 
-        if (Object.keys(errors).length === 0) {
-            setIsSubmitted(true)
-    
-            setName('');
-            setEmail('');
-            setMessage('');
-    
+        if (Object.keys(validationErrors).length === 0) {
+            setIsSubmitted(true);
+
+            // Очистка формы
+            setFormState({
+                name: '',
+                email: '',
+                message: '',
+            });
+
             setTimeout(() => {
                 setIsSubmitted(false);
             }, 3000);
@@ -33,15 +46,15 @@ export const ContactPage = () => {
         const newErrors: Errors = {};
 
         // Проверка обязательных полей
-        if (!name.trim()) {
+        if (!formState.name.trim()) {
             newErrors.name = 'Имя обязательно для заполнения.';
         }
-        if (!email.trim()) {
+        if (!formState.email.trim()) {
             newErrors.email = 'Email обязателен для заполнения.';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
             newErrors.email = 'Некорректный формат email.';
         }
-        if (!message.trim()) {
+        if (!formState.message.trim()) {
             newErrors.message = 'Сообщение обязательно для заполнения.';
         }
 
@@ -67,8 +80,8 @@ export const ContactPage = () => {
                                 id="name"
                                 type="text"
                                 placeholder="Введите ваше имя"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={formState.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
                                 autoComplete="name"
                             />
                             {errors.name && <p className="text-red-500 text-xs mt-2">{errors.name}</p>}
@@ -82,8 +95,8 @@ export const ContactPage = () => {
                                 id="email"
                                 type="email"
                                 placeholder="Введите ваш email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formState.email}
+                                onChange={(e) => handleInputChange('email', e.target.value)}
                                 autoComplete="email"
                             />
                             {errors.email && <p className="text-red-500 text-xs mt-2">{errors.email}</p>}
@@ -97,8 +110,8 @@ export const ContactPage = () => {
                                 id="message"
                                 rows={5}
                                 placeholder="Введите ваше сообщение"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
+                                value={formState.message}
+                                onChange={(e) => handleInputChange('message', e.target.value)}
                                 autoComplete="off"
                             />
                             {errors.message && <p className="text-red-500 text-xs mt-2">{errors.message}</p>}
@@ -111,7 +124,6 @@ export const ContactPage = () => {
                                 Отправить
                             </button>
                         </div>
-
                     </form>
 
                     {isSubmitted && (

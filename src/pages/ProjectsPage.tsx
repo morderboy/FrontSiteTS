@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../store";
 import { addProject } from "../store/projectsSlice";
-import Modal from "../components/Modal"; // Добавьте модальный компонент
+import { Modal } from "../components/Modal";
+import { BaseProject } from "../types/Project";
+import { v4 as uuidv4 } from 'uuid';
 
 export const ProjectsPage = () => {
     const [selectedTech, setSelectedTech] = useState<string>("All");
@@ -13,10 +15,16 @@ export const ProjectsPage = () => {
     const projects = useSelector((state: RootState) => state.projects.items);
     const dispatch = useDispatch<AppDispatch>();
 
-    const allTechnologies = [
-        "All",
-        ...new Set(projects.flatMap((project) => project.technologies)),
-    ];
+    const toggleModal = () => {
+        setModalOpen((prev) => !prev); // Инвертируем состояние
+    };
+
+    const allTechnologies = useMemo(() => {
+        return [
+            "All",
+            ...new Set(projects.flatMap((project) => project.technologies)),
+        ];
+    }, [projects]);
 
     const filteredProjects = projects.filter((project) =>
         selectedTech === "All"
@@ -24,14 +32,9 @@ export const ProjectsPage = () => {
             : project.technologies.includes(selectedTech)
     );
 
-    const handleAddProject = (project: {
-        title: string;
-        description: string;
-        technologies: string[];
-        link: string;
-    }) => {
-        dispatch(addProject({ id: Date.now(), ...project }));
-        setModalOpen(false);
+    const handleAddProject = (project: BaseProject) => {
+        dispatch(addProject({ id: uuidv4(), ...project }));
+        toggleModal();
     };
 
     return (
@@ -79,9 +82,9 @@ export const ProjectsPage = () => {
                                 <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
                                 <p className="text-gray-600 mb-4">{project.description}</p>
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                    {project.technologies.map((tech, index) => (
+                                    {project.technologies.map((tech) => (
                                         <span
-                                            key={index}
+                                            key={uuidv4()}
                                             className="bg-blue-100 text-blue-700 px-2 py-1 text-sm rounded"
                                         >
                                             {tech}
@@ -110,7 +113,7 @@ export const ProjectsPage = () => {
             <Footer />
 
             {isModalOpen && (
-                <Modal onClose={() => setModalOpen(false)} onSave={handleAddProject} />
+                <Modal onClose={() => toggleModal()} onSave={handleAddProject} />
             )}
         </main>
     );
